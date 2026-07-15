@@ -1,12 +1,17 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi import Response
 from pydantic import BaseModel
 
 app = FastAPI()
 
 class TaskCreate(BaseModel):
     title: str | None = None
-    
+
+class TaskUpdate(BaseModel):
+    title: str | None = None
+    done: bool | None = None
+        
 # In-memory list (Our Database)
 tasks = [
     {"id": 1, "title": "Learn FastAPI", "done": False},
@@ -62,3 +67,37 @@ def create_task(task: TaskCreate):
     # Add to the list and return the created task
     tasks.append(new_task)
     return new_task
+
+# --- Stage 4 Endpoints ---
+
+# Update a task
+@app.put("/tasks/{task_id}")
+def update_task(task_id: int, task_update: TaskUpdate):
+    # Validate: Empty/invalid body -> 400
+    if task_update.title is None and task_update.done is None:
+        return JSONResponse(status_code=400, content={"error": "Empty or invalid body"})
+    
+    for task in tasks:
+        if task["id"] == task_id:
+            if task_update.title is not None:
+                if not task_update.title.strip():
+                    return JSONResponse(status_code=400, content={"error": "Title cannot be empty"})
+                task["title"] = task_update.title
+            if task_update.done is not None:
+                task["done"] = task_update.done
+            return task
+            
+    # Unknown id -> 404
+    return JSONResponse(status_code=404, content={"error": f"Task {task_id} not found"})
+
+# Delete a task
+@app.delete("/tasks/{task_id}")
+def delete_task(task_id: int):
+    for i, task in enumerate(tasks):
+        if task["id"] == task_id:
+            tasks.pop(i)
+            # Return 204 No Content with an empty body
+            return Response(status_code=204)
+            
+    # Unknown id -> 404
+    return JSONResponse(status_code=404, content={"error": f"Task {task_id} not found"})
