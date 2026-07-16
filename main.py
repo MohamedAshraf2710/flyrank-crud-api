@@ -22,6 +22,7 @@ tasks = [
 # --- Stage 1 Endpoints ---
 @app.get("/")
 def read_root():
+    """Returns a JSON description of the API."""
     return {
         "name": "Task API",
         "version": "1.0",
@@ -30,17 +31,20 @@ def read_root():
 
 @app.get("/health")
 def health_check():
+    """Checks if the server is alive and running."""
     return {"status": "ok"}
 
 # --- Stage 2 Endpoints ---
 # 1. Get all tasks
 @app.get("/tasks")
 def get_all_tasks():
+    """Returns the complete list of tasks."""
     return tasks
 
 # 2. Get a single task by ID
 @app.get("/tasks/{task_id}")
 def get_task(task_id: int):
+    """Returns a single task by its ID, or a 404 error if not found."""
     # Search for the task
     for task in tasks:
         if task["id"] == task_id:
@@ -52,6 +56,7 @@ def get_task(task_id: int):
 # --- Stage 3 Endpoints ---
 @app.post("/tasks", status_code=201)
 def create_task(task: TaskCreate):
+    """Creates a new task and adds it to the list."""
     # Validate the input: return 400 if title is missing or empty
     if not task.title or not task.title.strip():
         return JSONResponse(status_code=400, content={"error": "Title is required and cannot be empty"})
@@ -73,6 +78,7 @@ def create_task(task: TaskCreate):
 # Update a task
 @app.put("/tasks/{task_id}")
 def update_task(task_id: int, task_update: TaskUpdate):
+    """Updates an existing task's title or completion status."""
     # Validate: Empty/invalid body -> 400
     if task_update.title is None and task_update.done is None:
         return JSONResponse(status_code=400, content={"error": "Empty or invalid body"})
@@ -93,6 +99,7 @@ def update_task(task_id: int, task_update: TaskUpdate):
 # Delete a task
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: int):
+    """Deletes a task by its ID."""
     for i, task in enumerate(tasks):
         if task["id"] == task_id:
             tasks.pop(i)
