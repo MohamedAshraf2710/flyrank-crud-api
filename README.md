@@ -1,33 +1,33 @@
-# FlyRank CRUD API
+# FlyRank To-Do List API
 
-A simple in-memory CRUD API for managing a to-do list, built with FastAPI. This is the Week 2 (A1) assignment for the FlyRank Backend AI Engineering Internship.
+A professional, fully documented, in-memory CRUD API for managing a To-Do list. Built with **FastAPI** and **Python** as part of the FlyRank Backend AI Engineering Internship (Week 2 - A1). This project demonstrates foundational backend development skills, including strict status code enforcement, request validation, and API documentation.
 
-## How to Install & Run
+## Installation & Running the Server
 
-1. Install the required dependencies:
+1. **Install the required dependencies:**
    ```bash
    pip install fastapi uvicorn pydantic
    ```
-2. Start the server on localhost:
+
+2. **Start the local server:**
    ```bash
    uvicorn main:app --reload --port 8000
    ```
+   The API will be accessible at `http://localhost:8000`.
 
 ## Endpoints Table
 
 | CRUD Operation | HTTP Method | Endpoint | Meaning |
-|---|---|---|---|
-| - | GET | `/` | API Information |
-| - | GET | `/health` | Health Check |
-| Read | GET | `/tasks` | List all tasks (supports `?done=true` and `?search=term` filters) |
-| Read | GET | `/tasks/{id}` | Get a single task by ID |
-| Create | POST | `/tasks` | Add a new task |
-| Update | PUT | `/tasks/{id}` | Update a task's title or status |
-| Delete | DELETE | `/tasks/{id}` | Remove a task |
-| - | GET | `/stats` | **Extra:** Get statistics about tasks |
-| - | POST | `/reset` | **Extra:** Reset tasks to default |
+|:---:|:---:|---|---|
+| - | **GET** | `/` | Returns general API Information |
+| - | **GET** | `/health` | Health Check endpoint to verify server status |
+| Read | **GET** | `/tasks` | List all tasks |
+| Read | **GET** | `/tasks/{id}` | Retrieve a single task by its unique ID |
+| Create | **POST** | `/tasks` | Create and add a new task |
+| Update | **PUT** | `/tasks/{id}` | Update an existing task's title or completion status |
+| Delete | **DELETE** | `/tasks/{id}` | Delete a task by its unique ID |
 
-## Example curl Output
+## Example `curl` Output
 
 **Request:**
 ```bash
@@ -45,8 +45,12 @@ content-type: application/json
 {"id":1,"title":"Learn FastAPI","done":false}
 ```
 
-## Swagger UI Screenshot
-*(Please refer to the Swagger UI at `http://localhost:8000/docs` to see the generated interactive documentation).*
+## Swagger UI Documentation
+FastAPI automatically generates interactive API documentation. Once the server is running, you can explore the endpoints and test the API directly from your browser.
+
+![Swagger UI](swagger.png)
+
+---
 
 ## Stage 7: AI vs Me
 
