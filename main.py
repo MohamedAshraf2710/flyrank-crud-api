@@ -37,9 +37,14 @@ def health_check():
 # --- Stage 2 Endpoints ---
 # 1. Get all tasks
 @app.get("/tasks")
-def get_all_tasks():
-    """Returns the complete list of tasks."""
-    return tasks
+def get_all_tasks(done: bool | None = None, search: str | None = None):
+    """Returns the list of tasks, optionally filtered by 'done' status or 'search' term."""
+    result = tasks
+    if done is not None:
+        result = [t for t in result if t["done"] == done]
+    if search is not None:
+        result = [t for t in result if search.lower() in t["title"].lower()]
+    return result
 
 # 2. Get a single task by ID
 @app.get("/tasks/{task_id}")
@@ -108,3 +113,25 @@ def delete_task(task_id: int):
             
     # Unknown id -> 404
     return JSONResponse(status_code=404, content={"error": f"Task {task_id} not found"})
+
+# --- Extras Endpoints ---
+
+@app.get("/stats")
+def get_stats():
+    """Returns statistics about the tasks."""
+    total = len(tasks)
+    done_count = sum(1 for t in tasks if t["done"])
+    open_count = total - done_count
+    return {"total": total, "done": done_count, "open": open_count}
+
+@app.post("/reset")
+def reset_tasks():
+    """Restores the 3 example tasks."""
+    global tasks
+    tasks.clear()
+    tasks.extend([
+        {"id": 1, "title": "Learn FastAPI", "done": False},
+        {"id": 2, "title": "Build CRUD API", "done": False},
+        {"id": 3, "title": "Master Git", "done": True}
+    ])
+    return {"message": "Tasks reset to default examples"}
