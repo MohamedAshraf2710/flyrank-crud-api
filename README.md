@@ -48,11 +48,16 @@ content-type: application/json
 ## Swagger UI Screenshot
 *(Please refer to the Swagger UI at `http://localhost:8000/docs` to see the generated interactive documentation).*
 
-## AI vs Me (Stage 7 - Optional)
-**Prompt used:** 
-> "Write a FastAPI CRUD application for a to-do list. It should use an in-memory list (no database). Support GET, POST, PUT, DELETE operations with correct status codes (200, 201, 204, 400, 404). Add validation for empty titles on creation and update."
+## Stage 7: AI vs Me
 
-**Differences found:**
-1. **Validation Details:** The AI handled validation slightly differently, using Pydantic's built-in validation instead of manual checks in the route handler.
-2. **Missing Endpoints:** The AI forgot to add the `/health` and root `/` API description endpoints which were specified in Stage 1, because the prompt forgot to explicitly request them.
-3. **Data Structure:** The AI used a dictionary for in-memory storage mapping ID to tasks, instead of a list.
+**The Prompt I Used:**
+I wrote a highly detailed "Ultimate Prompt" specifying the framework, strictly enforcing 400/404/201/204 status codes, requesting specific JSON error messages, and demanding all stretch goals (Pagination, Filtering, Searching, Stats, and Reset) in one go.
+
+**1. What did the AI do better?**
+The AI wrote extremely pythonic and robust code. To enforce my rule of returning a `400 Bad Request` instead of FastAPI's default `422 Unprocessable Entity` for missing fields, it brilliantly made the Pydantic model fields `Optional` (e.g., `title: Optional[str] = None`) and intercepted the payload inside the function to manually return the 400 JSONResponse. It also used advanced generator expressions for the ID creation `max((t["id"] for t in tasks), default=0) + 1`.
+
+**2. What did it get wrong or quietly ignore?**
+The AI followed the prompt almost flawlessly. However, because it was so focused on the logic, it didn't create the standard "Buy milk" tasks. Instead, it hallucinated software engineering tasks like "Review system architecture".
+
+**3. What did my prompt forget to specify?**
+I forgot to specify the default values for the pagination feature. I only asked for `?limit=int&offset=int`. The AI silently and smartly decided to set defaults `limit: int = 100, offset: int = 0` to prevent the API from breaking if a user didn't provide those parameters.
